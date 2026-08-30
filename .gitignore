@@ -1,0 +1,25 @@
+﻿# Credentials -- NEVER commit
+.env
+*.env
+*.pem
+*.key
+*.ppk
+id_rsa
+id_ed25519
+
+# MCP server build output
+mcp-ibmi-server/dist/
+mcp-ibmi-server/node_modules/
+
+# Node
+node_modules/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+*.swp
+*.swo

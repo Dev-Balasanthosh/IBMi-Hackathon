@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>IBM i Application Navigator — Bob 2.0</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f4f4f4;color:#161616;font-size:14px}
+.hero{background:linear-gradient(135deg,#001141 0%,#0f62fe 100%);color:#fff;padding:28px 40px 24px}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px}
+.hero h1{font-size:1.8rem;font-weight:700}
+.hero .sub{font-size:.95rem;opacity:.85;margin-top:4px}
+.event-tag{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:3px 14px;font-size:.75rem;letter-spacing:.4px}
+.mode-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600;white-space:nowrap}
+.mode-fall{background:#fff8e1;color:#7a5900}
+.mode-live{background:#defbe6;color:#198038}
+.search-wrap{background:#fff;border-bottom:2px solid #e0e0e0;padding:20px 40px;display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.search-group{display:flex;flex-direction:column;gap:4px}
+.search-group label{font-size:.78rem;font-weight:600;color:#525252;text-transform:uppercase;letter-spacing:.5px}
+.search-input{height:44px;padding:0 14px;border:2px solid #e0e0e0;border-radius:8px;font-size:.95rem;outline:none;transition:border .15s;width:240px;font-family:monospace;text-transform:uppercase;letter-spacing:1px}
+.search-input:focus{border-color:#0f62fe}
+.search-input::placeholder{text-transform:none;letter-spacing:0;font-family:'Segoe UI',Arial,sans-serif;color:#a8a8a8}
+.search-btn{height:44px;padding:0 24px;background:#0f62fe;color:#fff;border:none;border-radius:8px;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .15s}
+.search-btn:hover{background:#0050e6}
+.quick-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+.quick-btns span{font-size:.78rem;color:#6f6f6f;line-height:44px}
+.qbtn{height:32px;padding:0 12px;background:#f4f4f4;border:1px solid #e0e0e0;border-radius:16px;font-size:.78rem;cursor:pointer;transition:all .15s;font-family:monospace;font-weight:600}
+.qbtn:hover{background:#0f62fe;color:#fff;border-color:#0f62fe}
+.results{padding:24px 40px;min-height:200px}
+.placeholder{text-align:center;padding:60px 20px;color:#a8a8a8}
+.placeholder .big{font-size:3rem;margin-bottom:12px}
+.placeholder p{font-size:.95rem;line-height:1.8}
+.placeholder kbd{background:#f4f4f4;border:1px solid #e0e0e0;border-radius:4px;padding:2px 8px;font-size:.85rem;color:#161616}
+.steps-log{background:#161616;border-radius:10px;padding:16px 20px;margin-bottom:20px;font-family:monospace;font-size:.82rem;color:#a8a8a8;line-height:1.9;max-height:220px;overflow-y:auto}
+.step{opacity:0;transform:translateY(4px);transition:all .3s}
+.step.show{opacity:1;transform:none}
+.step.done{color:#42be65}
+.step.warn{color:#f1c21b}
+.step.err{color:#ff8389}
+.clarify{background:#f6f2ff;border:2px solid #8a3ffc;border-radius:10px;padding:20px 24px;margin-bottom:20px}
+.clarify h3{color:#491d8b;font-size:1rem;margin-bottom:12px}
+.clarify-btn{height:36px;padding:0 20px;border:2px solid #8a3ffc;background:#fff;color:#491d8b;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;margin-right:8px;font-family:monospace;transition:all .15s}
+.clarify-btn:hover{background:#8a3ffc;color:#fff}
+.result-card{background:#fff;border:1px solid #e0e0e0;border-radius:12px;overflow:hidden;margin-bottom:16px}
+.rc-header{background:#161616;color:#fff;padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.rc-header strong{font-size:1rem}
+.rc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.rc-section{padding:16px 20px;border-bottom:1px solid #f4f4f4}
+.rc-section.full{grid-column:1/-1;border-bottom:none}
+.rc-section h4{font-size:.75rem;text-transform:uppercase;letter-spacing:.6px;color:#6f6f6f;margin-bottom:10px;font-weight:700}
+table.info{width:100%;border-collapse:collapse;font-size:.82rem}
+table.info tr:nth-child(even) td{background:#fafafa}
+table.info td{padding:5px 10px;border:1px solid #f0f0f0;vertical-align:top}
+table.info td:first-child{font-weight:600;color:#525252;width:42%;white-space:nowrap}
+table.deps{width:100%;border-collapse:collapse;font-size:.82rem}
+table.deps th{background:#f4f4f4;padding:6px 10px;text-align:left;border:1px solid #e0e0e0;color:#525252;font-weight:700}
+table.deps td{padding:6px 10px;border:1px solid #e0e0e0;vertical-align:top}
+.trace{background:#f4f4f4;border-radius:8px;padding:14px 18px;margin-bottom:16px}
+.trace h4{font-size:.75rem;text-transform:uppercase;letter-spacing:.6px;color:#6f6f6f;margin-bottom:10px;font-weight:700}
+.trace ol{padding-left:20px;font-size:.83rem;line-height:2.2;color:#393939}
+.trace ol li b{color:#0f62fe}
+.metric-bar{display:flex;align-items:center;justify-content:center;gap:24px;background:#edf5ff;border:1px solid #d0e2ff;border-radius:10px;padding:14px 20px;flex-wrap:wrap;margin-bottom:16px}
+.metric-item{text-align:center}
+.metric-item .val{font-size:1.8rem;font-weight:700}
+.metric-item .lbl{font-size:.72rem;color:#6f6f6f;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.metric-sep{font-size:1.8rem;color:#a8a8a8}
+.metric-note{font-size:.72rem;color:#6f6f6f;font-style:italic;text-align:center}
+.tag{display:inline-block;border-radius:12px;padding:2px 9px;font-size:.72rem;font-weight:700;margin-left:4px}
+.tag-pgm{background:#d0e2ff;color:#002d9c}
+.tag-file{background:#d9fbfb;color:#005d5d}
+.tag-srvpgm{background:#ffd6e8;color:#9f1853}
+.tag-clp{background:#e8daff;color:#491d8b}
+.tag-nosrc{background:#fff1f1;color:#da1e28}
+.ok{color:#198038;font-weight:700}
+.warn-c{color:#da1e28;font-weight:700}
+.not-found{background:#fff1f1;border:2px solid #da1e28;border-radius:10px;padding:28px;text-align:center}
+.not-found h3{color:#da1e28;margin-bottom:10px;font-size:1.1rem}
+.not-found p{font-size:.88rem;line-height:1.9;color:#393939}
+.info-strip{background:#fff;border-top:2px solid #e0e0e0;padding:14px 40px;display:flex;gap:28px;flex-wrap:wrap;font-size:.8rem;color:#525252}
+.info-strip strong{color:#161616}
+.nosrc-box{background:#fff1f1;border-radius:8px;padding:12px;font-size:.82rem;line-height:1.8;color:#393939}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-top">
+    <div>
+      <div class="event-tag">🏆 IBM TechXchange 2026 — Pre-Conference Dev Day Hackathon</div>
+      <h1 style="margin-top:10px">🖥️ IBM i Application Navigator</h1>
+      <p class="sub">Bob 2.0 — Type any program name and run the full agentic investigation</p>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+      <span class="mode-pill mode-fall">🟡 LOCAL FALLBACK — demo dataset active</span>
+      <span style="font-size:.72rem;opacity:.7">PUB400 not connected — offline demo mode</span>
+    </div>
+  </div>
+</div>
+
+<div class="search-wrap">
+  <div class="search-group">
+    <label>Program / Object Name</label>
+    <input id="searchInput" class="search-input" type="text" placeholder="e.g. CUSTUPD" maxlength="10" autocomplete="off"/>
+  </div>
+  <button class="search-btn" onclick="runSearch()">🔍 Investigate</button>
+  <div class="quick-btns">
+    <span>Quick search:</span>
+    <button class="qbtn" onclick="quickSearch('CUSTUPD')" title="Happy path — full investigation">CUSTUPD</button>
+    <button class="qbtn" onclick="quickSearch('RPTGEN')" title="Edge case — 2 library matches">RPTGEN 🔀</button>
+    <button class="qbtn" onclick="quickSearch('EDTPGM')" title="Edge case — no source">EDTPGM ⚠️</button>
+    <button class="qbtn" onclick="quickSearch('CUSTCL')" title="CL program">CUSTCL</button>
+    <button class="qbtn" onclick="quickSearch('BALASRV')" title="Service program">BALASRV</button>
+    <button class="qbtn" onclick="quickSearch('CUSTDSP')" title="Display file program">CUSTDSP</button>
+    <button class="qbtn" onclick="quickSearch('BALA01')" title="Physical file">BALA01</button>
+    <button class="qbtn" onclick="quickSearch('ORDHDR')" title="Order header program">ORDHDR</button>
+    <button class="qbtn" onclick="quickSearch('XXXXXXX')" title="Not found demo">XXXXXXX ❌</button>
+  </div>
+</div>
+
+<div class="results" id="results">
+  <div class="placeholder">
+    <div class="big">🖥️</div>
+    <p>
+      <strong>IBM i Application Navigator</strong><br/><br/>
+      Type a program or object name above and press <kbd>Enter</kbd> or click <strong>Investigate</strong><br/>
+      — or click a quick-search button to see a live demo scenario.<br/><br/>
+      <span style="font-size:.82rem">All 11 demo objects available: CUSTUPD · RPTGEN · EDTPGM · CUSTCL · BALASRV · CUSTDSP · CUSTDSPF · BALA01 · ORDHDR · INVMST · and more</span>
+    </p>
+  </div>
+</div>
+
+<div class="info-strip">
+  <div>📦 <strong>11</strong> objects in dataset</div>
+  <div>📚 <strong>8</strong> libraries in scope</div>
+  <div>🔗 <strong>13</strong> dependency references</div>
+  <div>🧠 <strong>6</strong> Bob skills active</div>
+  <div>🔧 <strong>7</strong> MCP tools registered</div>
+  <div style="margin-left:auto;color:#6f6f6f;font-style:italic">⚠️ Illustrative demo timings — not production metrics</div>
+</div>
+
+<script>
+const LIBS=[
+  {library:"QSYS",   type:"SYS",  ordinal:1, description:"IBM i System Library"},
+  {library:"QSYS2",  type:"SYS",  ordinal:2, description:"IBM i System Library 2 — SQL catalog services"},
+  {library:"QUSRSYS",type:"SYS",  ordinal:3, description:"IBM i User System Library"},
+  {library:"QGPL",   type:"PROD", ordinal:4, description:"General Purpose Library"},
+  {library:"BALA981",type:"PROD", ordinal:5, description:"Demo application library"},
+  {library:"TESTLIB",type:"USR",  ordinal:6, description:"Test / development library"},
+  {library:"DEVLIB", type:"USR",  ordinal:7, description:"Developer working library"},
+  {library:"QTEMP",  type:"CUR",  ordinal:8, description:"Temporary library — session scoped"}
+];
+const OBJECTS=[
+  {object_name:"CUSTUPD", library:"QGPL",    object_type:"*PGM",    attribute:"RPGLE", text_description:"Customer record update program",                    creation_date:"2022-03-15",last_change_date:"2024-11-08",object_size:49152, compiler:"CRTBNDRPG"},
+  {object_name:"BALA01",  library:"BALA981", object_type:"*FILE",   attribute:"PF",    text_description:"Customer balance master file — physical file",      creation_date:"2021-07-20",last_change_date:"2024-09-03",object_size:8192,  compiler:"CRTPF"},
+  {object_name:"ORDHDR",  library:"QGPL",    object_type:"*PGM",    attribute:"RPGLE", text_description:"Order header processing program",                   creation_date:"2021-11-05",last_change_date:"2023-06-14",object_size:32768, compiler:"CRTBNDRPG"},
+  {object_name:"INVMST",  library:"QGPL",    object_type:"*FILE",   attribute:"LF",    text_description:"Inventory master file — logical file over INVPF",   creation_date:"2020-04-12",last_change_date:"2024-01-22",object_size:4096,  compiler:"CRTLF"},
+  {object_name:"EDTPGM",  library:"TESTLIB", object_type:"*PGM",    attribute:"RPGLE", text_description:"Edit/validation program — source not available",    creation_date:"2019-08-30",last_change_date:"2019-08-30",object_size:16384, compiler:"CRTBNDRPG"},
+  {object_name:"RPTGEN",  library:"QGPL",    object_type:"*PGM",    attribute:"RPGLE", text_description:"Report generator — production version in QGPL",     creation_date:"2022-01-10",last_change_date:"2024-07-19",object_size:40960, compiler:"CRTBNDRPG"},
+  {object_name:"RPTGEN",  library:"DEVLIB",  object_type:"*PGM",    attribute:"RPGLE", text_description:"Report generator — development/test version in DEVLIB",creation_date:"2024-10-01",last_change_date:"2024-12-15",object_size:41984,compiler:"CRTBNDRPG"},
+  {object_name:"CUSTDSP", library:"QGPL",    object_type:"*PGM",    attribute:"RPGLE", text_description:"Customer display program — RPGLE display file handler",creation_date:"2023-05-18",last_change_date:"2024-08-22",object_size:36864,compiler:"CRTBNDRPG"},
+  {object_name:"CUSTDSPF",library:"QGPL",    object_type:"*FILE",   attribute:"DSPF",  text_description:"Customer display file — DDS display format definitions",creation_date:"2023-05-10",last_change_date:"2024-06-01",object_size:12288,compiler:"CRTDSPF"},
+  {object_name:"CUSTCL",  library:"QGPL",    object_type:"*PGM",    attribute:"CLP",   text_description:"Customer batch CL driver — calls CUSTUPD and CUSTDSP",creation_date:"2021-09-14",last_change_date:"2024-03-05",object_size:8192, compiler:"CRTCLPGM"},
+  {object_name:"BALASRV", library:"BALA981", object_type:"*SRVPGM", attribute:"RPGLE", text_description:"Customer balance service program — shared business logic",creation_date:"2022-11-03",last_change_date:"2024-10-17",object_size:57344,compiler:"CRTSRVPGM"}
+];
+const PROGRAMS=[
+  {program_name:"CUSTUPD",program_library:"QGPL",    source_file:"QRPGLESRC",source_library:"QGPL",    source_member:"CUSTUPD",compiler:"CRTBNDRPG", target_release:"V7R4M0",debug_data:true, bound_service_programs:["QSRVPGM","QILERTI"],  optimization:"*NONE"},
+  {program_name:"ORDHDR", program_library:"QGPL",    source_file:"QRPGLESRC",source_library:"QGPL",    source_member:"ORDHDR", compiler:"CRTBNDRPG", target_release:"V7R4M0",debug_data:true, bound_service_programs:["QSRVPGM"],            optimization:"*NONE"},
+  {program_name:"EDTPGM", program_library:"TESTLIB", source_file:null,       source_library:null,      source_member:null,     compiler:"CRTBNDRPG", target_release:"V7R2M0",debug_data:false,bound_service_programs:[],                     optimization:"*FULL"},
+  {program_name:"RPTGEN", program_library:"QGPL",    source_file:"QRPGLESRC",source_library:"QGPL",    source_member:"RPTGEN", compiler:"CRTBNDRPG", target_release:"V7R4M0",debug_data:true, bound_service_programs:["QSRVPGM","QILERPTS"], optimization:"*NONE"},
+  {program_name:"RPTGEN", program_library:"DEVLIB",  source_file:"QRPGLESRC",source_library:"DEVLIB",  source_member:"RPTGEN", compiler:"CRTBNDRPG", target_release:"V7R5M0",debug_data:true, bound_service_programs:["QSRVPGM","QILERPTS"], optimization:"*NONE"},
+  {program_name:"CUSTDSP",program_library:"QGPL",    source_file:"QRPGLESRC",source_library:"QGPL",    source_member:"CUSTDSP",compiler:"CRTBNDRPG", target_release:"V7R4M0",debug_data:true, bound_service_programs:["QSRVPGM"],            optimization:"*NONE"},
+  {program_name:"CUSTCL", program_library:"QGPL",    source_file:"QCLSRC",   source_library:"QGPL",    source_member:"CUSTCL", compiler:"CRTCLPGM",  target_release:"V7R4M0",debug_data:true, bound_service_programs:[],                     optimization:"*NONE"},
+  {program_name:"BALASRV",program_library:"BALA981", source_file:"QRPGLESRC",source_library:"BALA981", source_member:"BALASRV",compiler:"CRTSRVPGM", target_release:"V7R4M0",debug_data:true, bound_service_programs:["QSRVPGM","QILERTI"],  optimization:"*NONE"}
+];
+const REFS=[
+  {from_object:"CUSTUPD",from_library:"QGPL",   to_object:"BALA01",  to_library:"BALA981",to_type:"*FILE",  usage:"INPUT/OUTPUT — customer balance master file read and updated"},
+  {from_object:"CUSTUPD",from_library:"QGPL",   to_object:"INVMST",  to_library:"QGPL",   to_type:"*FILE",  usage:"INPUT — inventory master logical file read for stock validation"},
+  {from_object:"CUSTUPD",from_library:"QGPL",   to_object:"ORDHDR",  to_library:"QGPL",   to_type:"*PGM",   usage:"CALL — order header program called to retrieve open order count"},
+  {from_object:"CUSTUPD",from_library:"QGPL",   to_object:"EDTPGM",  to_library:"TESTLIB",to_type:"*PGM",   usage:"CALL — edit/validation program called for field-level validation"},
+  {from_object:"CUSTUPD",from_library:"QGPL",   to_object:"BALASRV", to_library:"BALA981",to_type:"*SRVPGM",usage:"BIND — balance service program bound for shared balance calculation"},
+  {from_object:"RPTGEN", from_library:"QGPL",   to_object:"BALA01",  to_library:"BALA981",to_type:"*FILE",  usage:"INPUT — balance file read for report generation"},
+  {from_object:"RPTGEN", from_library:"QGPL",   to_object:"INVMST",  to_library:"QGPL",   to_type:"*FILE",  usage:"INPUT — inventory master read for stock report"},
+  {from_object:"RPTGEN", from_library:"DEVLIB", to_object:"BALA01",  to_library:"BALA981",to_type:"*FILE",  usage:"INPUT — balance file read for report generation (dev version)"},
+  {from_object:"ORDHDR", from_library:"QGPL",   to_object:"BALA01",  to_library:"BALA981",to_type:"*FILE",  usage:"INPUT — customer balance file read to validate credit limit"},
+  {from_object:"CUSTDSP",from_library:"QGPL",   to_object:"BALA01",  to_library:"BALA981",to_type:"*FILE",  usage:"INPUT — customer balance master file read for display"},
+  {from_object:"CUSTDSP",from_library:"QGPL",   to_object:"CUSTDSPF",to_library:"QGPL",   to_type:"*FILE",  usage:"WORKSTN — display file used for interactive customer screen"},
+  {from_object:"CUSTCL", from_library:"QGPL",   to_object:"CUSTUPD", to_library:"QGPL",   to_type:"*PGM",   usage:"CALL — customer update program called from CL batch driver"},
+  {from_object:"CUSTCL", from_library:"QGPL",   to_object:"CUSTDSP", to_library:"QGPL",   to_type:"*PGM",   usage:"CALL — customer display program called for interactive confirmation"}
+];
+
+function typeTag(t,a){
+  if(t==="*PGM"&&a==="CLP") return '<span class="tag tag-clp">CLP</span>';
+  if(t==="*PGM") return '<span class="tag tag-pgm">'+a+'</span>';
+  if(t==="*SRVPGM") return '<span class="tag tag-srvpgm">*SRVPGM</span>';
+  if(t==="*FILE") return '<span class="tag tag-file">'+a+'</span>';
+  return '<span class="tag tag-pgm">'+t+'</span>';
+}
+function fmtSize(b){return b>=1024?Math.round(b/1024).toLocaleString()+' KB':b+' B'}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+
+function quickSearch(n){document.getElementById('searchInput').value=n;runSearch();}
+
+function runSearch(){
+  const v=document.getElementById('searchInput').value.trim().toUpperCase();
+  if(!v)return;
+  runInvestigation(v,null);
+}
+
+async function runInvestigation(name,forcedLib){
+  const out=document.getElementById('results');
+  out.innerHTML='';
+  const log=document.createElement('div');
+  log.className='steps-log';
+  log.innerHTML='<div style="color:#42be65;margin-bottom:2px">▶ IBM i Application Navigator — Agentic Investigation</div>';
+  out.appendChild(log);
+
+  const addStep=async(txt,cls,delay=300)=>{
+    await sleep(delay);
+    const d=document.createElement('div');
+    d.className='step '+cls;d.textContent=txt;log.appendChild(d);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>d.classList.add('show')));
+    log.scrollTop=log.scrollHeight;
+  };
+
+  await addStep('[Step 1] check_connection → PUB400 not reachable','warn',200);
+  await addStep('         🟡 Mode set to LOCAL FALLBACK — reading demo dataset','warn');
+  await addStep('[Step 2] get_library_list → reading library-list.json','',250);
+  await addStep('         ✅ '+LIBS.length+' libraries in scope: '+LIBS.map(l=>l.library).join(', '),'done');
+  await addStep('[Step 3] discover_object("'+name+'") → searching object-catalog.json','',250);
+
+  const matches=OBJECTS.filter(o=>o.object_name===name);
+
+  if(!matches.length){
+    await addStep('         ❌ "'+name+'" not found in any library','err');
+    const nf=document.createElement('div');nf.className='not-found';
+    const all=[...new Set(OBJECTS.map(o=>o.object_name))];
+    nf.innerHTML='<h3>❌ Object "'+name+'" not found</h3><p>No object named <strong>'+name+'</strong> exists in the current library scope.<br/><br/>'
+      +'<strong>Libraries searched:</strong> '+LIBS.map(l=>l.library).join(', ')+'<br/><br/>'
+      +'<strong>Try one of these available objects:</strong><br/><br/>'
+      +all.map(n=>'<button class="qbtn" style="margin:3px" onclick="quickSearch(\''+n+'\')">'+n+'</button>').join('')
+      +'<br/><br/><em style="font-size:.8rem">On a live IBM i, use ADDLIBLE to add a missing library and retry.</em></p>';
+    out.appendChild(nf);
+    return;
+  }
+
+  let obj;
+  if(forcedLib){
+    obj=matches.find(m=>m.library===forcedLib);
+  } else if(matches.length>1){
+    await addStep('         ⚠️ '+matches.length+' matches found — clarification needed','warn');
+    const cp=document.createElement('div');cp.className='clarify';
+    let rows=matches.map(m=>'<tr><td><strong>'+m.library+'</strong></td><td>'+m.object_type+'</td><td>'+m.text_description+'</td><td>'+m.last_change_date+'</td></tr>').join('');
+    let btns=matches.map(m=>'<button class="clarify-btn" onclick="runInvestigation(\''+m.object_name+'\',\''+m.library+'\')">'+m.library+'</button>').join('');
+    cp.innerHTML='<h3>🔀 Multiple objects found — which library?</h3>'
+      +'<table style="width:100%;border-collapse:collapse;font-size:.83rem;margin-bottom:14px">'
+      +'<thead><tr style="background:#e8daff"><th style="padding:7px 12px;border:1px solid #d4bbff;color:#491d8b">Library</th><th style="padding:7px 12px;border:1px solid #d4bbff;color:#491d8b">Type</th><th style="padding:7px 12px;border:1px solid #d4bbff;color:#491d8b">Description</th><th style="padding:7px 12px;border:1px solid #d4bbff;color:#491d8b">Last Changed</th></tr></thead>'
+      +'<tbody>'+rows+'</tbody></table>'
+      +'<p style="font-size:.83rem;margin-bottom:12px;color:#393939">Select the library to continue the investigation:</p>'+btns;
+    out.appendChild(cp);
+    return;
+  } else {
+    obj=matches[0];
+  }
+
+  await addStep('         ✅ '+obj.object_name+' in '+obj.library+' ['+obj.object_type+'/'+obj.attribute+'] last changed '+obj.last_change_date,'done');
+  await addStep('[Step 4] get_program_info("'+obj.object_name+'","'+obj.library+'") → reading program-info.json','',250);
+
+  const prog=PROGRAMS.find(p=>p.program_name===obj.object_name&&p.program_library===obj.library);
+  if(!prog){
+    await addStep('         ℹ️ Data file — source via DDS (check '+obj.library+'/QDDSSRC member '+obj.object_name+')');
+  } else if(!prog.source_member){
+    await addStep('         ⚠️ Source member not available — compiled with '+prog.optimization+', debug_data=false','warn');
+  } else {
+    await addStep('         ✅ Source: '+prog.source_library+'/'+prog.source_file+'('+prog.source_member+'), compiler='+prog.compiler,'done');
+  }
+
+  await addStep('[Step 5] get_program_refs("'+obj.object_name+'","'+obj.library+'") → reading program-refs.json','',250);
+  const outbound=REFS.filter(r=>r.from_object===obj.object_name&&r.from_library===obj.library);
+  const inbound=REFS.filter(r=>r.to_object===obj.object_name&&r.to_library===obj.library);
+  await addStep('         ✅ '+outbound.length+' outbound ref(s), '+inbound.length+' inbound caller(s)','done');
+  await addStep('[Step 6] Assembling result card...','done',200);
+
+  // ── RESULT CARD ──
+  const card=document.createElement('div');card.className='result-card';
+  const noSrc=prog&&!prog.source_member;
+  card.innerHTML='<div class="rc-header">'
+    +'<strong>📋 '+obj.object_name+'</strong>'+typeTag(obj.object_type,obj.attribute)
+    +(noSrc?'<span class="tag tag-nosrc">⚠️ No Source</span>':'')
+    +'<span style="margin-left:auto"><span class="mode-pill mode-fall" style="font-size:.78rem">🟡 LOCAL FALLBACK</span></span>'
+    +'</div>';
+  const body=document.createElement('div');body.className='rc-grid';
+
+  // Object panel
+  const op=document.createElement('div');op.className='rc-section';
+  op.innerHTML='<h4>📦 Object</h4><table class="info">'
+    +'<tr><td>Name</td><td><strong>'+obj.object_name+'</strong></td></tr>'
+    +'<tr><td>Library</td><td>'+obj.library+'</td></tr>'
+    +'<tr><td>Type / Attr</td><td>'+obj.object_type+' / '+obj.attribute+'</td></tr>'
+    +'<tr><td>Description</td><td>'+obj.text_description+'</td></tr>'
+    +'<tr><td>Created</td><td>'+obj.creation_date+'</td></tr>'
+    +'<tr><td>Last Changed</td><td><strong>'+obj.last_change_date+'</strong> <span class="ok">✅</span></td></tr>'
+    +'<tr><td>Size</td><td>'+fmtSize(obj.object_size)+'</td></tr>'
+    +'<tr><td>Compiler</td><td>'+obj.compiler+'</td></tr>'
+    +'</table>';
+
+  // Source panel
+  const sp=document.createElement('div');sp.className='rc-section';
+  let srcHTML='';
+  if(!prog){
+    srcHTML='<table class="info">'
+      +'<tr><td>Source File</td><td><strong>'+(obj.source_file||'QDDSSRC')+'</strong> <span class="ok">✅</span></td></tr>'
+      +'<tr><td>Source Library</td><td>'+(obj.source_library||obj.library)+'</td></tr>'
+      +'<tr><td>Source Member</td><td><strong>'+(obj.source_member||obj.object_name)+'</strong></td></tr>'
+      +'<tr><td>Compiler</td><td>'+obj.compiler+'</td></tr>'
+      +'<tr><td>Note</td><td>DDS source file object</td></tr>'
+      +'</table>';
+  } else if(noSrc){
+    srcHTML='<div class="nosrc-box"><div style="color:#da1e28;font-weight:700;margin-bottom:8px">⚠️ Source member not available</div>'
+      +'<strong>Compiler:</strong> '+prog.compiler+'<br/>'
+      +'<strong>Optimization:</strong> '+prog.optimization+'<br/>'
+      +'<strong>Debug data:</strong> No<br/><br/>'
+      +'<em>Compiled with DBGVIEW(*NONE) or source deleted after compilation.</em></div>';
+  } else {
+    srcHTML='<table class="info">'
+      +'<tr><td>Source File</td><td><strong>'+prog.source_file+'</strong> <span class="ok">✅</span></td></tr>'
+      +'<tr><td>Source Library</td><td>'+prog.source_library+'</td></tr>'
+      +'<tr><td>Source Member</td><td><strong>'+prog.source_member+'</strong> <span class="ok">✅</span></td></tr>'
+      +'<tr><td>Compiler</td><td>'+prog.compiler+'</td></tr>'
+      +'<tr><td>Target Release</td><td>'+prog.target_release+'</td></tr>'
+      +'<tr><td>Debug Data</td><td><span class="ok">✅ Yes</span></td></tr>'
+      +(prog.bound_service_programs&&prog.bound_service_programs.length?'<tr><td>Bound Srvpgms</td><td>'+prog.bound_service_programs.join(', ')+'</td></tr>':'')
+      +'</table>';
+  }
+  sp.innerHTML='<h4>📄 Source Location</h4>'+srcHTML;
+  body.appendChild(op);body.appendChild(sp);
+
+  // Deps panel
+  const dp=document.createElement('div');dp.className='rc-section full';
+  let dh='';
+  if(outbound.length){
+    dh+='<div style="margin-bottom:14px"><div style="font-size:.78rem;color:#525252;font-weight:700;margin-bottom:6px">⬆️ OUTBOUND — what '+obj.object_name+' references ('+outbound.length+')</div>'
+      +'<table class="deps"><thead><tr><th>Object</th><th>Library</th><th>Type</th><th>Usage</th></tr></thead><tbody>'
+      +outbound.map(r=>'<tr><td><strong>'+r.to_object+'</strong></td><td>'+r.to_library+'</td><td>'+r.to_type+'</td><td>'+r.usage+'</td></tr>').join('')
+      +'</tbody></table></div>';
+  } else {
+    dh+='<p style="font-size:.82rem;color:#6f6f6f;margin-bottom:12px">No outbound references recorded for this object.</p>';
+  }
+  if(inbound.length){
+    dh+='<div><div style="font-size:.78rem;color:#525252;font-weight:700;margin-bottom:6px">⬇️ INBOUND — what calls '+obj.object_name+' ('+inbound.length+')</div>'
+      +'<table class="deps"><thead><tr><th>Caller</th><th>Library</th><th>Type</th><th>Usage</th></tr></thead><tbody>'
+      +inbound.map(r=>'<tr><td><strong>'+r.from_object+'</strong></td><td>'+r.from_library+'</td><td>'+r.from_type+'</td><td>'+r.usage+'</td></tr>').join('')
+      +'</tbody></table></div>';
+  } else {
+    dh+='<p style="font-size:.82rem;color:#6f6f6f">ℹ️ No inbound callers found in this dataset.</p>';
+  }
+  dp.innerHTML='<h4>🔗 Dependencies</h4>'+dh;
+  body.appendChild(dp);
+  card.appendChild(body);
+
+  // Trace
+  const srcLoc=!prog?obj.library+'/QDDSSRC('+obj.object_name+')':noSrc?'⚠️ not available':prog.source_library+'/'+prog.source_file+'('+prog.source_member+')';
+  const trace=document.createElement('div');trace.className='trace';
+  trace.innerHTML='<h4>🔍 Investigation Trace</h4><ol>'
+    +'<li><b>Connection check</b> → 🟡 LOCAL FALLBACK (PUB400 not reachable)</li>'
+    +'<li><b>Library list resolved</b> → '+LIBS.length+' libraries in scope; '+obj.library+' <span class="ok">✅</span> present</li>'
+    +'<li><b>Object discovered</b> → '+obj.object_name+' in '+obj.library+' as '+obj.object_type+', last changed '+obj.last_change_date+'</li>'
+    +'<li><b>Source located</b> → '+srcLoc+'</li>'
+    +'<li><b>Dependencies analysed</b> → '+outbound.length+' outbound, '+inbound.length+' inbound</li>'
+    +'</ol>';
+
+  const metric=document.createElement('div');metric.className='metric-bar';
+  metric.innerHTML='<div class="metric-item"><div class="val" style="color:#da1e28">~15 min</div><div class="lbl">Manual investigation</div></div>'
+    +'<div class="metric-sep">→</div>'
+    +'<div class="metric-item"><div class="val" style="color:#198038">~30 sec</div><div class="lbl">Bob-assisted</div></div>'
+    +'<div class="metric-note">⚠️ Illustrative values — not measured production metrics</div>';
+
+  out.appendChild(card);
+  out.appendChild(trace);
+  out.appendChild(metric);
+}
+
+document.getElementById('searchInput').addEventListener('keydown',e=>{if(e.key==='Enter')runSearch();});
+</script>
+</body>
+</html>
