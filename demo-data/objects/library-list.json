@@ -1,0 +1,12 @@
+{
+  "library_list": [
+    { "library": "QSYS",    "type": "SYS",  "ordinal": 1,  "description": "IBM i System Library" },
+    { "library": "QSYS2",   "type": "SYS",  "ordinal": 2,  "description": "IBM i System Library 2 — SQL catalog services" },
+    { "library": "QUSRSYS", "type": "SYS",  "ordinal": 3,  "description": "IBM i User System Library" },
+    { "library": "QGPL",    "type": "PROD", "ordinal": 4,  "description": "General Purpose Library" },
+    { "library": "BALA981", "type": "PROD", "ordinal": 5,  "description": "Demo application library — customer balance system" },
+    { "library": "TESTLIB", "type": "USR",  "ordinal": 6,  "description": "Test / development library" },
+    { "library": "DEVLIB",  "type": "USR",  "ordinal": 7,  "description": "Developer working library" },
+    { "library": "QTEMP",   "type": "CUR",  "ordinal": 8,  "description": "Temporary library — session scoped" }
+  ]
+}

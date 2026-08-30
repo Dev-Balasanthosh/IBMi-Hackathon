@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "ibmi": {
+      "command": "node",
+      "args": ["mcp-ibmi-server/dist/index.js"],
+      "transport": "stdio",
+      "env": {}
+    }
+  }
+}

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>IBM i Application Navigator — Bob 2.0</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Arial,sans-serif;background:#f4f4f4;color:#161616}
+  a{color:#0f62fe}
+  .hero{background:linear-gradient(135deg,#001141 0%,#0f62fe 100%);color:#fff;padding:40px 48px 32px}
+  .hero h1{font-size:2.2rem;font-weight:700;letter-spacing:-0.5px}
+  .hero .sub{font-size:1.05rem;opacity:.85;margin-top:6px}
+  .hero .event{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:4px 14px;font-size:.8rem;margin-top:14px;letter-spacing:.5px}
+  .problem{display:flex;gap:24px;padding:32px 48px;background:#fff;border-bottom:2px solid #e0e0e0;align-items:center}
+  .problem .box{flex:1;border-radius:10px;padding:20px 24px}
+  .problem .before{background:#fff1f1;border-left:4px solid #da1e28}
+  .problem .after{background:#defbe6;border-left:4px solid #198038}
+  .problem .box h3{font-size:.85rem;text-transform:uppercase;letter-spacing:.8px;opacity:.7;margin-bottom:8px}
+  .problem .box .time{font-size:2.4rem;font-weight:700}
+  .problem .box p{font-size:.9rem;margin-top:6px;line-height:1.5}
+  .problem .arrow{display:flex;align-items:center;font-size:2rem;color:#0f62fe;flex-shrink:0}
+  .disclaimer{text-align:center;font-size:.75rem;color:#6f6f6f;padding:6px 48px 0;background:#fff;padding-bottom:10px}
+  section{padding:32px 48px}
+  section.alt{background:#fff}
+  h2{font-size:1.25rem;font-weight:700;color:#0f62fe;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+  h2::after{content:'';flex:1;height:2px;background:#e0e0e0}
+  .arch{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:10px 0;flex-wrap:nowrap}
+  .arch-box{background:#fff;border:2px solid #0f62fe;border-radius:10px;padding:12px 16px;text-align:center;font-size:.82rem;font-weight:600;min-width:110px;white-space:nowrap;line-height:1.4}
+  .arch-box.orch{background:#0f62fe;color:#fff;min-width:140px}
+  .arch-box.skill{border-color:#8a3ffc;font-size:.78rem;min-width:100px;padding:8px 10px}
+  .arch-box.live{background:#defbe6;border-color:#198038;color:#198038}
+  .arch-box.fall{background:#fff8e1;border-color:#f1c21b;color:#7a5900}
+  .arch-arrow{font-size:1.4rem;color:#0f62fe;padding:0 4px;flex-shrink:0}
+  .arch-col{display:flex;flex-direction:column;gap:8px;align-items:center}
+  .arch-be{display:flex;flex-direction:column;gap:8px}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .step-card{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:14px 16px}
+  .step-card .num{width:28px;height:28px;background:#0f62fe;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;margin-bottom:8px}
+  .step-card p{font-size:.82rem;line-height:1.5;color:#393939}
+  .scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .sc{border-radius:10px;padding:18px 20px}
+  .sc.happy{background:#defbe6;border:1px solid #a7f0ba}
+  .sc.warn{background:#fff8e1;border:1px solid #f1c21b}
+  .sc.multi{background:#f6f2ff;border:1px solid #d4bbff}
+  .sc h4{font-size:.9rem;font-weight:700;margin-bottom:8px}
+  .sc p{font-size:.82rem;line-height:1.6;color:#393939}
+  .sc .tag{display:inline-block;border-radius:12px;padding:2px 10px;font-size:.73rem;font-weight:600;margin-bottom:8px}
+  .happy .tag{background:#a7f0ba;color:#044317}
+  .warn .tag{background:#f1c21b;color:#7a5900}
+  .multi .tag{background:#d4bbff;color:#491d8b}
+  .result-card{background:#fff;border:1px solid #e0e0e0;border-radius:12px;overflow:hidden}
+  .rc-header{background:#161616;color:#fff;padding:14px 20px;display:flex;align-items:center;gap:12px;font-weight:700;flex-wrap:wrap}
+  .mode-badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:.8rem;font-weight:600}
+  .mode-live{background:#defbe6;color:#198038}
+  .mode-fall{background:#fff8e1;color:#7a5900}
+  .rc-body{padding:0 20px 20px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .rc-section{margin-top:16px}
+  .rc-section h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.6px;color:#6f6f6f;margin-bottom:8px}
+  table{width:100%;border-collapse:collapse;font-size:.8rem}
+  th{background:#f4f4f4;padding:6px 10px;text-align:left;font-weight:600;border:1px solid #e0e0e0;color:#525252}
+  td{padding:6px 10px;border:1px solid #e0e0e0;color:#161616}
+  .rc-trace{grid-column:1/-1}
+  .trace-list{list-style:none;font-size:.82rem}
+  .trace-list li{padding:5px 0;border-bottom:1px solid #f4f4f4;color:#393939}
+  .trace-list li::before{content:'→ ';color:#0f62fe;font-weight:700}
+  .metric{grid-column:1/-1;text-align:center;background:#f4f4f4;border-radius:8px;padding:12px;font-size:.85rem;color:#525252;margin-top:4px}
+  .metric strong{color:#0f62fe}
+  .skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .skill-card{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:16px 18px}
+  .skill-card .icon{font-size:1.6rem;margin-bottom:8px}
+  .skill-card h4{font-size:.9rem;font-weight:700;margin-bottom:4px}
+  .skill-card .file{font-size:.72rem;font-family:monospace;color:#6f6f6f;margin-bottom:6px}
+  .skill-card p{font-size:.8rem;line-height:1.5;color:#525252}
+  .skill-card.primary{border-color:#0f62fe;background:#edf5ff}
+  .tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:4px}
+  .tool-chip{background:#f4f4f4;border:1px solid #e0e0e0;border-radius:8px;padding:10px 12px;font-size:.78rem;font-family:monospace;text-align:center}
+  .tool-chip .tname{font-weight:700;color:#0f62fe;display:block;margin-bottom:2px}
+  .tool-chip .tdesc{color:#525252;font-family:'Segoe UI',Arial,sans-serif;font-size:.72rem}
+  .tech{display:flex;flex-wrap:wrap;gap:10px}
+  .chip{padding:6px 16px;border-radius:20px;font-size:.82rem;font-weight:600}
+  .c1{background:#0f62fe;color:#fff}
+  .c2{background:#8a3ffc;color:#fff}
+  .c3{background:#007d79;color:#fff}
+  .c4{background:#da1e28;color:#fff}
+  .c5{background:#f1c21b;color:#161616}
+  .c6{background:#198038;color:#fff}
+  footer{background:#161616;color:#a8a8a8;text-align:center;padding:20px;font-size:.8rem}
+  footer strong{color:#fff}
+  @media print{body{background:#fff}.hero,.rc-header{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="event">🏆 IBM TechXchange 2026 — Pre-Conference Dev Day Hackathon</div>
+  <h1 style="margin-top:14px">🖥️ IBM i Application Navigator</h1>
+  <p class="sub">Bob 2.0 Agentic Investigation — Find programs, source &amp; dependencies from one natural-language request</p>
+</div>
+
+<!-- PROBLEM -->
+<div class="problem">
+  <div class="box before">
+    <h3>Without Bob</h3>
+    <div class="time" style="color:#da1e28">~15 min</div>
+    <p>Manual search across libraries, commands, and spooled files to find where a program lives and what it connects to</p>
+  </div>
+  <div class="arrow">➜</div>
+  <div class="box after">
+    <h3>With Bob</h3>
+    <div class="time" style="color:#198038">~30 sec</div>
+    <p>One natural-language request — Bob investigates connection, library scope, object metadata, source &amp; dependencies</p>
+  </div>
+</div>
+<div class="disclaimer">⚠️ Illustrative values — not measured production metrics</div>
+
+<!-- ARCHITECTURE -->
+<section class="alt">
+  <h2>🏗️ Architecture</h2>
+  <div class="arch">
+    <div class="arch-box">👨‍💻<br/>Developer<br/>Request</div>
+    <div class="arch-arrow">⟶</div>
+    <div class="arch-box orch">🧠<br/>Explanation<br/>Orchestrator<br/><span style="font-size:.7rem;opacity:.8">(self-contained)</span></div>
+    <div class="arch-arrow">⟶</div>
+    <div class="arch-col">
+      <div style="font-size:.75rem;color:#8a3ffc;font-weight:700;margin-bottom:2px">5 Investigation Steps</div>
+      <div class="arch-box skill">🔌 Connection</div>
+      <div class="arch-box skill">📚 Library List</div>
+      <div class="arch-box skill">🔍 Object Discovery</div>
+      <div class="arch-box skill">📄 Source Locator</div>
+      <div class="arch-box skill">🔗 Dependency Analyzer</div>
+    </div>
+    <div class="arch-arrow">⟶</div>
+    <div class="arch-be">
+      <div class="arch-box live">🟢 LIVE IBM i<br/>PUB400 via SSH<br/><span style="font-size:.72rem">QSYS2 SQL + CL</span></div>
+      <div style="text-align:center;font-size:.78rem;color:#6f6f6f;padding:4px">↕ auto-fallback</div>
+      <div class="arch-box fall">🟡 LOCAL FALLBACK<br/>Demo Dataset<br/><span style="font-size:.72rem">JSON + Markdown KB</span></div>
+    </div>
+    <div class="arch-arrow">⟶</div>
+    <div class="arch-box" style="background:#defbe6;border-color:#198038;min-width:130px">📋 Result Card<br/>+ Investigation<br/>Trace</div>
+  </div>
+  <div style="margin-top:14px;font-size:.8rem;color:#6f6f6f;background:#f4f4f4;padding:10px 16px;border-radius:8px">
+    <strong>MCP Server</strong> (<code>mcp-ibmi-server</code>) — 7 typed tools over stdio transport. Centralises all SSH, credential handling &amp; output parsing.
+  </div>
+  <div class="tools-grid" style="margin-top:12px">
+    <div class="tool-chip"><span class="tname">check_connection</span><span class="tdesc">TCP probe</span></div>
+    <div class="tool-chip"><span class="tname">get_library_list</span><span class="tdesc">QSYS2.LIBRARY_LIST_INFO</span></div>
+    <div class="tool-chip"><span class="tname">discover_object</span><span class="tdesc">QSYS2.OBJECT_STATISTICS</span></div>
+    <div class="tool-chip"><span class="tname">get_program_info</span><span class="tdesc">QSYS2.PROGRAM_INFO</span></div>
+    <div class="tool-chip"><span class="tname">get_program_refs</span><span class="tdesc">DSPPGMREF / QSYS2</span></div>
+    <div class="tool-chip"><span class="tname">search_source</span><span class="tdesc">QSYS2.SYSPARTITIONSTAT</span></div>
+    <div class="tool-chip"><span class="tname">execute_ibmi_command</span><span class="tdesc">Generic SSH passthrough</span></div>
+  </div>
+</section>
+
+<!-- DEMO FLOW -->
+<section>
+  <h2>🎬 Live Demo Flow (8 Steps)</h2>
+  <div class="steps">
+    <div class="step-card"><div class="num">1</div><p>Ask: <em>"Find CUSTUPD and its source"</em></p></div>
+    <div class="step-card"><div class="num">2</div><p>Bob checks PUB400 — sets 🟢 LIVE or 🟡 FALLBACK</p></div>
+    <div class="step-card"><div class="num">3</div><p>Bob resolves library list, validates scope</p></div>
+    <div class="step-card"><div class="num">4</div><p>Bob discovers the exact program object &amp; metadata</p></div>
+    <div class="step-card"><div class="num">5</div><p>Bob resolves source file, library &amp; member</p></div>
+    <div class="step-card"><div class="num">6</div><p>Bob analyses related &amp; referenced objects</p></div>
+    <div class="step-card"><div class="num">7</div><p>Structured result card + investigation trace</p></div>
+    <div class="step-card"><div class="num">8</div><p><em>Optional:</em> Disconnect PUB400 → auto-switches to fallback</p></div>
+  </div>
+</section>
+
+<!-- SCENARIOS -->
+<section class="alt">
+  <h2>🧪 Demo Scenarios</h2>
+  <div class="scenarios">
+    <div class="sc happy">
+      <span class="tag">✅ Happy Path</span>
+      <h4>CUSTUPD — Full Investigation</h4>
+      <p>Found in <strong>QGPL</strong>, source in <strong>QRPGLESRC(CUSTUPD)</strong>, last changed <strong>2024-11-08</strong>, 5 outbound deps including files, programs &amp; service program.</p>
+    </div>
+    <div class="sc warn">
+      <span class="tag">⚠️ Edge Case 1</span>
+      <h4>EDTPGM — Missing Source</h4>
+      <p>Object found in <strong>TESTLIB</strong> but <code>source_member = null</code>. Bob reports <em>"compiled with OPTIMIZE(*FULL), source stripped"</em> and continues without error.</p>
+    </div>
+    <div class="sc multi">
+      <span class="tag">🔀 Edge Case 2</span>
+      <h4>RPTGEN — Two Library Matches</h4>
+      <p>Found in <strong>QGPL</strong> (production) and <strong>DEVLIB</strong> (development). Bob surfaces candidate table and asks for library clarification.</p>
+    </div>
+  </div>
+</section>
+
+<!-- RESULT CARD -->
+<section>
+  <h2>📋 Sample Result Card — CUSTUPD</h2>
+  <div class="result-card">
+    <div class="rc-header">
+      IBM i Investigation Result &nbsp;
+      <span class="mode-badge mode-fall">🟡 LOCAL FALLBACK — demo dataset</span>
+      &nbsp;/&nbsp;
+      <span class="mode-badge mode-live">🟢 LIVE IBM i — pub400.com</span>
+    </div>
+    <div class="rc-body">
+      <div class="rc-section">
+        <h4>📦 Object</h4>
+        <table>
+          <tr><th>Field</th><th>Value</th></tr>
+          <tr><td>Name</td><td><strong>CUSTUPD</strong></td></tr>
+          <tr><td>Library</td><td>QGPL</td></tr>
+          <tr><td>Type</td><td>*PGM / RPGLE</td></tr>
+          <tr><td>Description</td><td>Customer record update program</td></tr>
+          <tr><td>Created</td><td>2022-03-15</td></tr>
+          <tr><td>Last Changed</td><td><strong>2024-11-08</strong> ✅</td></tr>
+          <tr><td>Size</td><td>49,152 bytes</td></tr>
+        </table>
+      </div>
+      <div class="rc-section">
+        <h4>📄 Source Location</h4>
+        <table>
+          <tr><th>Field</th><th>Value</th></tr>
+          <tr><td>Source File</td><td><strong>QRPGLESRC</strong> ✅</td></tr>
+          <tr><td>Source Library</td><td>QGPL</td></tr>
+          <tr><td>Source Member</td><td><strong>CUSTUPD</strong> ✅</td></tr>
+          <tr><td>Compiler</td><td>CRTBNDRPG</td></tr>
+          <tr><td>Target Release</td><td>V7R4M0</td></tr>
+          <tr><td>Debug Data</td><td>Yes ✅</td></tr>
+        </table>
+      </div>
+      <div class="rc-section" style="grid-column:1/-1">
+        <h4>🔗 Dependencies (Outbound)</h4>
+        <table>
+          <tr><th>Object</th><th>Library</th><th>Type</th><th>Usage</th></tr>
+          <tr><td>BALA01</td><td>BALA981</td><td>*FILE (PF)</td><td>INPUT/OUTPUT — balance master file</td></tr>
+          <tr><td>INVMST</td><td>QGPL</td><td>*FILE (LF)</td><td>INPUT — inventory logical file</td></tr>
+          <tr><td>ORDHDR</td><td>QGPL</td><td>*PGM</td><td>CALL — open order count</td></tr>
+          <tr><td>EDTPGM</td><td>TESTLIB</td><td>*PGM</td><td>CALL — field validation</td></tr>
+          <tr><td>BALASRV</td><td>BALA981</td><td>*SRVPGM</td><td>BIND — balance service program</td></tr>
+        </table>
+      </div>
+      <div class="rc-trace rc-section">
+        <h4>🔍 Investigation Trace</h4>
+        <ul class="trace-list">
+          <li>Connection check → 🟡 LOCAL FALLBACK (PUB400 not reachable)</li>
+          <li>Library list resolved → 8 libraries in scope; QGPL ✅ present</li>
+          <li>Object discovered → CUSTUPD in QGPL as *PGM, last changed 2024-11-08</li>
+          <li>Source located → QGPL/QRPGLESRC(CUSTUPD), debug data = true ✅</li>
+          <li>Dependencies analysed → 5 outbound refs; inbound not available in fallback</li>
+        </ul>
+      </div>
+      <div class="metric">
+        ⏱️ Estimated manual investigation: <strong>~15 min</strong> &nbsp;|&nbsp; Bob-assisted: <strong>~30 sec</strong> &nbsp;—&nbsp; <em>illustrative values</em>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="alt">
+  <h2>🧠 6 Bob Skills — <code>.bob/skills/</code></h2>
+  <div class="skills-grid">
+    <div class="skill-card"><div class="icon">🔌</div><h4>Connection Resolver</h4><div class="file">connection-resolver/SKILL.md</div><p>TCP probe to PUB400. Sets 🟢 LIVE or 🟡 FALLBACK mode for the session.</p></div>
+    <div class="skill-card"><div class="icon">📚</div><h4>Library List Resolver</h4><div class="file">library-list-resolver/SKILL.md</div><p>Resolves effective library list. Validates scope. Prevents false "not found" conclusions.</p></div>
+    <div class="skill-card"><div class="icon">🔍</div><h4>Object Discovery</h4><div class="file">object-discovery/SKILL.md</div><p>Finds IBM i objects via QSYS2. Handles single match, multiple libraries, and not-found.</p></div>
+    <div class="skill-card"><div class="icon">📄</div><h4>Source Locator</h4><div class="file">source-locator/SKILL.md</div><p>Finds source file, library &amp; member. Gracefully handles missing source with explanations.</p></div>
+    <div class="skill-card"><div class="icon">🔗</div><h4>Dependency Analyzer</h4><div class="file">dependency-analyzer/SKILL.md</div><p>Outbound refs via DSPPGMREF / QSYS2. Attempts inbound analysis with honest fallback.</p></div>
+    <div class="skill-card primary"><div class="icon">🧠</div><h4>Explanation Orchestrator ⭐</h4><div class="file">explanation-orchestrator/SKILL.md</div><p><strong>Primary demo skill.</strong> Self-contained 6-step workflow inline. Calls MCP tools directly. Full result card + trace.</p></div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section>
+  <h2>⚙️ Tech Stack</h2>
+  <div class="tech">
+    <span class="chip c1">🤖 Bob 2.0</span>
+    <span class="chip c2">🔧 MCP Server (stdio)</span>
+    <span class="chip c3">📘 TypeScript</span>
+    <span class="chip c4">🔐 SSH2</span>
+    <span class="chip c5">🗄️ QSYS2 SQL</span>
+    <span class="chip c6">⚡ Node.js 24</span>
+  </div>
+  <div style="margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;font-size:.82rem">
+    <div style="background:#f4f4f4;border-radius:8px;padding:12px"><strong>LIVE Path</strong><br/>SSH → PUB400 → QSYS2 SQL + CL → structured JSON</div>
+    <div style="background:#f4f4f4;border-radius:8px;padding:12px"><strong>FALLBACK Path</strong><br/>Local JSON + Markdown KB → Bob reasons over data — no network needed</div>
+    <div style="background:#f4f4f4;border-radius:8px;padding:12px"><strong>Security</strong><br/>Credentials in .env only · Read-only IBM i · No secrets in source</div>
+  </div>
+</section>
+
+<footer>
+  <strong>IBM i Application Navigator — Bob 2.0</strong> &nbsp;|&nbsp;
+  IBM TechXchange 2026 Pre-Conference Dev Day Hackathon &nbsp;|&nbsp;
+  ⚠️ Demo timings are illustrative values, not measured production metrics
+</footer>
+
+</body>
+</html>

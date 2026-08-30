@@ -1,0 +1,11 @@
+     A                                      CUSTOMER BALANCE MASTER FILE
+     A                                      REF(BALA981/QDDSSRC)
+     A          R BALAR                     CUSTOMER BALANCE RECORD
+     A            CUSTNO         7S 0       CUSTOMER NUMBER
+     A            CUSTNAME      30A         CUSTOMER NAME
+     A            BALAMT        11S 2       CURRENT BALANCE AMOUNT
+     A            CREDLMT       11S 2       CREDIT LIMIT
+     A            LASTUPD        8S 0       LAST UPDATE DATE (YYYYMMDD)
+     A            LASTUSR       10A         LAST UPDATED BY USER
+     A            STATUS         1A         RECORD STATUS (A=ACTIVE C=CLOSED)
+     A          K CUSTNO

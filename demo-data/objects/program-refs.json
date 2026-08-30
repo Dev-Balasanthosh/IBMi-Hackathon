@@ -1,0 +1,121 @@
+{
+  "references": [
+    {
+      "from_object":  "CUSTUPD",
+      "from_library": "QGPL",
+      "from_type":    "*PGM",
+      "to_object":    "BALA01",
+      "to_library":   "BALA981",
+      "to_type":      "*FILE",
+      "usage":        "INPUT/OUTPUT — customer balance master file read and updated"
+    },
+    {
+      "from_object":  "CUSTUPD",
+      "from_library": "QGPL",
+      "from_type":    "*PGM",
+      "to_object":    "INVMST",
+      "to_library":   "QGPL",
+      "to_type":      "*FILE",
+      "usage":        "INPUT — inventory master logical file read for stock validation"
+    },
+    {
+      "from_object":  "CUSTUPD",
+      "from_library": "QGPL",
+      "from_type":    "*PGM",
+      "to_object":    "ORDHDR",
+      "to_library":   "QGPL",
+      "to_type":      "*PGM",
+      "usage":        "CALL — order header program called to retrieve open order count"
+    },
+    {
+      "from_object":  "CUSTUPD",
+      "from_library": "QGPL",
+      "from_type":    "*PGM",
+      "to_object":    "EDTPGM",
+      "to_library":   "TESTLIB",
+      "to_type":      "*PGM",
+      "usage":        "CALL — edit/validation program called for field-level validation"
+    },
+    {
+      "from_object":  "CUSTUPD",
+      "from_library": "QGPL",
+      "from_type":    "*PGM",
+      "to_object":    "BALASRV",
+      "to_library":   "BALA981",
+      "to_type":      "*SRVPGM",
+      "usage":        "BIND — balance service program bound for shared balance calculation logic"
+    },
+    {
+      "from_object":  "RPTGEN",
+      "from_library": "QGPL",
+      "from_type":    "*PGM",
+      "to_object":    "BALA01",
+      "to_library":   "BALA981",
+      "to_type":      "*FILE",
+      "usage":        "INPUT — balance file read for report generation"
+    },
+    {
+      "from_object":  "RPTGEN",
+      "from_library": "QGPL",
+      "from_type":    "*PGM",
+      "to_object":    "INVMST",
+      "to_library":   "QGPL",
+      "to_type":      "*FILE",
+      "usage":        "INPUT — inventory master read for stock report"
+    },
+    {
+      "from_object":  "RPTGEN",
+      "from_library": "DEVLIB",
+      "from_type":    "*PGM",
+      "to_object":    "BALA01",
+      "to_library":   "BALA981",
+      "to_type":      "*FILE",
+      "usage":        "INPUT — balance file read for report generation (dev version)"
+    },
+    {
+      "from_object":  "ORDHDR",
+      "from_library": "QGPL",
+      "from_type":    "*PGM",
+      "to_object":    "BALA01",
+      "to_library":   "BALA981",
+      "to_type":      "*FILE",
+      "usage":        "INPUT — customer balance file read to validate credit limit"
+    },
+    {
+      "from_object":  "CUSTDSP",
+      "from_library": "QGPL",
+      "from_type":    "*PGM",
+      "to_object":    "BALA01",
+      "to_library":   "BALA981",
+      "to_type":      "*FILE",
+      "usage":        "INPUT — customer balance master file read for display"
+    },
+    {
+      "from_object":  "CUSTDSP",
+      "from_library": "QGPL",
+      "from_type":    "*PGM",
+      "to_object":    "CUSTDSPF",
+      "to_library":   "QGPL",
+      "to_type":      "*FILE",
+      "usage":        "WORKSTN — display file used for interactive customer screen"
+    },
+    {
+      "from_object":  "CUSTCL",
+      "from_library": "QGPL",
+      "from_type":    "*PGM",
+      "to_object":    "CUSTUPD",
+      "to_library":   "QGPL",
+      "to_type":      "*PGM",
+      "usage":        "CALL — customer update program called from CL batch driver"
+    },
+    {
+      "from_object":  "CUSTCL",
+      "from_library": "QGPL",
+      "from_type":    "*PGM",
+      "to_object":    "CUSTDSP",
+      "to_library":   "QGPL",
+      "to_type":      "*PGM",
+      "usage":        "CALL — customer display program called for interactive confirmation"
+    }
+  ]
+}
